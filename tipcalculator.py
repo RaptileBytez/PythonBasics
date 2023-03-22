@@ -1,6 +1,6 @@
-'''
+"""
 This 'app' will calculate the total price you need to pay in a restaurant, if you would like to give the waiter a tip
-'''
+"""
 
 food_amount = float(input('Geben Sie bitte den Rechnungsbetrag ein €: '))
 tip_percentage = int(input('Geben Sie den Prozentsatz für Ihr Trinkgeld ein %: '))
