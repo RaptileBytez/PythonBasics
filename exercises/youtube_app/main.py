@@ -11,8 +11,13 @@ CHANNELS = {
     'TWT': 'UC4JX40jDee_tINbkjycV4Sg'
 }
 
+# TODO: Replace NONE with  your API key below
+headers = {
+    "X-RapidAPI-Key": None,
+    "X-RapidAPI-Host": "youtube-media-downloader.p.rapidapi.com"
+}
 
-def query_youtube_for_video_data(channel_id) -> json:
+def query_youtube_for_video_data(channel_id, headers=headers) -> json:
     """
     This function will query YouTube for the last 30 videos and return the data as a json
     :param channel_id: Channel ID of the channel to be queried
@@ -20,10 +25,6 @@ def query_youtube_for_video_data(channel_id) -> json:
     """
     endpoint_video_url = "https://youtube-media-downloader.p.rapidapi.com/v2/channel/videos"
 
-    headers = {
-        "X-RapidAPI-Key": "a0e917eb9cmshc30a7296fefb068p19cf43jsne42ff10164e0",
-        "X-RapidAPI-Host": "youtube-media-downloader.p.rapidapi.com"
-    }
     querystring = {"channelId": channel_id}
 
     video_response = requests.request("GET", endpoint_video_url, headers=headers, params=querystring)
@@ -37,17 +38,14 @@ def query_youtube_for_video_data(channel_id) -> json:
     return video_data
 
 
-def query_youtube_for_channel_data(channel_id) -> json:
+def query_youtube_for_channel_data(channel_id, headers=headers) -> json:
     """
     This function is used to query the channel data of a given ID and returns it as a JSON
     :param channel_id: Channel ID of the channel to be queried
     :return: Channel data as a JSON
     """
     endpoint_channel_url = "https://youtube-media-downloader.p.rapidapi.com/v2/channel/details"
-    headers = {
-        "X-RapidAPI-Key": "a0e917eb9cmshc30a7296fefb068p19cf43jsne42ff10164e0",
-        "X-RapidAPI-Host": "youtube-media-downloader.p.rapidapi.com"
-    }
+
     querystring = {"channelId": channel_id}
     channel_response = requests.request("GET", endpoint_channel_url, headers=headers, params=querystring)
     channel_data = channel_response.json()
