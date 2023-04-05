@@ -1,0 +1,17 @@
+{% from 'components.html' import card %}
+<head>
+  <link rel="stylesheet" href="./static/styles.css" />
+  <title>My Youtube App</title>
+</head>
+<div id="menu">
+    <span>Available channels:<br>
+        <a href="/fcc">💻 FreeCodeCamp</a>
+        <a href="/twt">💻 Tech With Tim</a>
+        <a href="/cp">💻 Clever Programmer</a>
+    </span>
+  <div id="home">
+    {% for video in videos %}
+    {{ card(video, channel) }}
+    {% endfor %}
+  </div>
+</div>
