@@ -1,9 +1,11 @@
 {% macro card(video, channel) -%}
 <div class="card">
   <div class="thumbnailContainer">
-    <img src="{{ video['thumbnails'] | highest_quality_thumbnail }}"
-         class="thumbnail"
-    />
+    <a href="{{ video['id'] | video_playback_url }}">
+      <img src="{{ video['thumbnails'] | highest_quality_thumbnail }}"
+           class="thumbnail"
+      />
+    </a>
   </div>
 
   <div class="infoContainer">

@@ -17,9 +17,11 @@ headers = {
     "X-RapidAPI-Host": "youtube-media-downloader.p.rapidapi.com"
 }
 
-def query_youtube_for_video_data(channel_id, headers=headers) -> json:
+
+def query_youtube_for_video_data(channel_id, _headers) -> json:
     """
     This function will query YouTube for the last 30 videos and return the data as a json
+    :param _headers: Dictionary of API relevant information for the request
     :param channel_id: Channel ID of the channel to be queried
     :return: Last 30 videos as JSON data
     """
@@ -27,7 +29,7 @@ def query_youtube_for_video_data(channel_id, headers=headers) -> json:
 
     querystring = {"channelId": channel_id}
 
-    video_response = requests.request("GET", endpoint_video_url, headers=headers, params=querystring)
+    video_response = requests.request("GET", endpoint_video_url, headers=_headers, params=querystring)
     video_response = video_response.json()
     video_data = video_response['items']
     # Here is how you would extract the video id and its title for the video_data:
@@ -38,23 +40,24 @@ def query_youtube_for_video_data(channel_id, headers=headers) -> json:
     return video_data
 
 
-def query_youtube_for_channel_data(channel_id, headers=headers) -> json:
+def query_youtube_for_channel_data(channel_id, _headers) -> json:
     """
     This function is used to query the channel data of a given ID and returns it as a JSON
     :param channel_id: Channel ID of the channel to be queried
+    :param _headers: Dictionary of API relevant information for the request
     :return: Channel data as a JSON
     """
     endpoint_channel_url = "https://youtube-media-downloader.p.rapidapi.com/v2/channel/details"
 
     querystring = {"channelId": channel_id}
-    channel_response = requests.request("GET", endpoint_channel_url, headers=headers, params=querystring)
+    channel_response = requests.request("GET", endpoint_channel_url, headers=_headers, params=querystring)
     channel_data = channel_response.json()
     return channel_data
 
 
 app = Flask(__name__, template_folder='templates')
 
-# Youtube response datastructure
+# Youtube video response datastructure
 # as of 05.04.2023
 '''example_data = { 'status': True, 'nextToken': 'loooooooong string we do not care about', 'items': [ {'type': 
 'video', 'id': 'MsnQ5uepIaE', 'title': 'Frontend Web Development: In-Depth Project Tutorial (HTML, CSS, JavaScript, 
@@ -80,36 +83,36 @@ TypeScript, React)', 'isLiveNow': False, 'lengthTest': '10:02:10', 'viewCountTex
 @app.route('/')
 def index():
     active_id = CHANNELS['CleverProgrammer']
-    videos = query_youtube_for_video_data(active_id)
+    videos = query_youtube_for_video_data(active_id, headers)
     time.sleep(1.1)
-    channel = query_youtube_for_channel_data(active_id)
+    channel = query_youtube_for_channel_data(active_id, headers)
     return render_template('index.html', videos=videos, channel=channel)
 
 
 @app.route('/fcc')
 def get_fcc_data():
     active_id = CHANNELS['freeCodeCamp']
-    videos = query_youtube_for_video_data(active_id)
+    videos = query_youtube_for_video_data(active_id, headers)
     time.sleep(1.1)
-    channel = query_youtube_for_channel_data(active_id)
+    channel = query_youtube_for_channel_data(active_id, headers)
     return render_template('fcc.html', videos=videos, channel=channel)
 
 
 @app.route('/twt')
 def get_twt_data():
     active_id = CHANNELS['TWT']
-    videos = query_youtube_for_video_data(active_id)
+    videos = query_youtube_for_video_data(active_id, headers)
     time.sleep(1.1)
-    channel = query_youtube_for_channel_data(active_id)
+    channel = query_youtube_for_channel_data(active_id, headers)
     return render_template('twt.html', videos=videos, channel=channel)
 
 
 @app.route('/cp')
 def get_cp_data():
     active_channel = CHANNELS['CleverProgrammer']
-    videos = query_youtube_for_video_data(active_channel)
+    videos = query_youtube_for_video_data(active_channel, headers)
     time.sleep(1.1)
-    channel = query_youtube_for_channel_data(active_channel)
+    channel = query_youtube_for_channel_data(active_channel, headers)
     return render_template('cp.html', videos=videos, channel=channel)
 
 
@@ -145,4 +148,15 @@ def highest_quality_thumbnail(thumbnails) -> str:
     return img_src
 
 
-app.run('0.0.0.0', 81)
+@app.template_filter()
+def video_playback_url(video_id: str) -> str:
+    prefix = 'https://youtube.com/watch?v='
+    return prefix + video_id
+
+
+if headers['X-RapidAPI-Key'] is not None:
+    app.run('0.0.0.0', 81)
+else:
+    print(
+        "Obtain a X-RapidAPI-Key from http://rapidapi.com and paste it in the headers dictionary in order for that "
+        "app to run")
